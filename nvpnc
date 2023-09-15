@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+#Script to randomly select a contry for nordvpn to connect to.
+#Gand0rf
+#15 Sep 2023
+#
+
+#Checks to see if you are loggin in. If not will display the link to 
+#click on to login. If you are, it will continue on.
+login=$(nordvpn login | tr -d '\r\n')
+
+if echo "$login" | grep -q "browser"
+then
+    echo ${login:8}
+    exit
+fi
+
+#The next two lines get the country names and makes a list out of them.
+countries=$(nordvpn countries | tr -d '\r-' | sed -r 's/[\t\t\t]+/ /g')
+
+country_list=(${countries})
+
+#Finds the length of country_list
+c_len=${#country_list[@]}
+
+#THE FUN PART!! Randomly selects a contry form the list.
+selection=$((1 + $RANDOM % $c_len-1))
+
+#Prints out what country you got, then sets up the connection.
+echo You got ${country_list[$selection]}!!!
+
+nordvpn connect ${country_list[$selection]}
